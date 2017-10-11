@@ -1,11 +1,11 @@
 package server
 
 import (
-	"github.com/devfeel/dotweb-start/const"
-	"github.com/devfeel/dotweb-start/global"
 	"fmt"
 	"github.com/devfeel/dotlog"
 	"github.com/devfeel/dotweb"
+	"github.com/devfeel/dotweb-start/const"
+	"github.com/devfeel/dotweb-start/global"
 	"github.com/devfeel/dotweb/config"
 	"strconv"
 )
@@ -19,6 +19,9 @@ func StartServer(configPath string) error {
 
 	//设置路由
 	InitRoute(global.DotApp.HttpServer)
+
+	//设置模板目录
+	global.DotApp.HttpServer.Renderer().SetTemplatePath("../server/views/")
 
 	innerLogger := dotlog.GetLogger(_const.LoggerName_Inner)
 
