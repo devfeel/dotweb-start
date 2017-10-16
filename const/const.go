@@ -1,8 +1,8 @@
 package _const
 
 const (
-	Global_ProjectName = "EMStockData.APIService"
-	Global_Version     = "V1.0 - 20170829"
+	Global_ProjectName = "DotWeb.Start"
+	Global_Version     = "V1.1 - 20171011"
 )
 
 const (
