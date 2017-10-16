@@ -19,13 +19,13 @@ import (
 var (
 	innerLogger dotlog.Logger
 	configFile  string
-	currBinPath string
+	configPath  string
 )
 
 func init() {
 	//start log service
-	currBinPath = file.GetCurrentDirectory()
-	err := dotlog.StartLogService(currBinPath + "/dotlog.conf")
+	configPath = file.GetCurrentDirectory()
+	err := dotlog.StartLogService(configPath + "/dotlog.conf")
 	if err != nil {
 		os.Stdout.Write([]byte("log service start error => " + err.Error()))
 	}
@@ -44,7 +44,7 @@ func main() {
 	//load app config
 	flag.StringVar(&configFile, "config", "", "配置文件路径")
 	if configFile == "" {
-		configFile = currBinPath + "/app.conf"
+		configFile = configPath + "/app.conf"
 	}
 
 	//加载xml配置文件
@@ -54,9 +54,9 @@ func main() {
 	//go listenSignal()
 
 	//启动Task服务
-	task.StartTaskService(currBinPath)
+	task.StartTaskService(configPath)
 
-	err := server.StartServer(currBinPath)
+	err := server.StartServer(configPath)
 	if err != nil {
 		innerLogger.Warn("HttpServer.StartServer失败 " + err.Error())
 		fmt.Println("HttpServer.StartServer失败 " + err.Error())
