@@ -3,7 +3,7 @@ package task
 import (
 	"github.com/devfeel/dotweb-start/task/tasks/test"
 	"fmt"
-	"github.com/devfeel/task"
+	"github.com/devfeel/dottask"
 )
 
 var (
