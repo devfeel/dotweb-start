@@ -28,8 +28,5 @@ func StartServer(configPath string) error {
 	innerLogger.Debug("dotweb.StartServer => " + strconv.Itoa(appConfig.Server.Port))
 	fmt.Println("dotweb.StartServer => " + strconv.Itoa(appConfig.Server.Port))
 	err := global.DotApp.Start()
-	if err != nil {
-		panic(err)
-	}
 	return err
 }
