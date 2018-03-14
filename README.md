@@ -18,3 +18,10 @@
 * server：web服务目录，包含常规处理逻辑、路由、静态资源等
 * task：调度任务模块
 * util：通用方法
+
+## 依赖项
+* github.com/devfeel/dotweb
+* github.com/devfeel/dotlog
+* github.com/devfeel/mapper
+* github.com/devfeel/middleware
+* github.com/devfeel/database
