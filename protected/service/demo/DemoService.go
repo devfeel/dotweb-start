@@ -52,7 +52,6 @@ func (service *DemoService) QueryDemoInfo(demoId int) (*model.DemoInfo, error) {
 		return nil, errors.New("must set demoId")
 	}
 	result := new(model.DemoInfo)
-	var resultMap map[string]interface{}
 	var err error
 	redisKey := RedisKey_DemoInfoID + strconv.Itoa(demoId)
 	//get from redis
@@ -63,12 +62,7 @@ func (service *DemoService) QueryDemoInfo(demoId int) (*model.DemoInfo, error) {
 
 	err = service.demoRepository.QueryDemoInfo(result, demoId)
 	if err == nil {
-		if len(resultMap) >0 {
-			//convert to struct
-			errMapper := mapper.MapperMap(resultMap, result)
-			if errMapper != nil {
-				return nil, errMapper
-			}
+		if result != nil {
 			//set to redis
 			service.RedisCache.SetJsonObj(redisKey, result)
 		}else{
