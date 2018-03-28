@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"github.com/devfeel/dotlog"
 	"github.com/devfeel/cache"
-	"github.com/devfeel/mapper"
+	"database/sql"
 )
 
 var (
@@ -62,13 +62,10 @@ func (service *DemoService) QueryDemoInfo(demoId int) (*model.DemoInfo, error) {
 
 	err = service.demoRepository.QueryDemoInfo(result, demoId)
 	if err == nil {
-		if result != nil {
-			//set to redis
-			service.RedisCache.SetJsonObj(redisKey, result)
-		}else{
-			result = nil
-			err = errors.New("not exists this demo info")
-		}
+		service.RedisCache.SetJsonObj(redisKey, result)
+	}else if err == sql.ErrNoRows{
+		result = nil
+		err = errors.New("not exists this demo info")
 	}
 	return result, err
 }
