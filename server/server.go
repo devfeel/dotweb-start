@@ -11,10 +11,9 @@ import (
 
 func StartServer(configPath string) error {
 	//初始化DotServer
-	global.DotApp = dotweb.Classic()
-
 	appConfig := config.MustInitConfig(configPath + "/dotweb.conf")
-	global.DotApp.SetConfig(appConfig)
+	global.DotApp = dotweb.ClassicWithConf(appConfig)
+
 	global.DotApp.SetDevelopmentMode()
 	global.DotApp.UseRequestLog()
 	global.DotApp.Use(cors.Middleware(cors.NewConfig().UseDefault()))
