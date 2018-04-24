@@ -10,7 +10,6 @@ import (
 )
 
 func StartServer(configPath string) error {
-	//初始化DotServer
 	appConfig := config.MustInitConfig(configPath + "/dotweb.conf")
 	global.DotApp = dotweb.ClassicWithConf(appConfig)
 
