@@ -6,11 +6,13 @@ import (
 	"github.com/devfeel/dotweb-start/const"
 	"errors"
 	"github.com/devfeel/dotweb-start/core"
+	"github.com/devfeel/dottask"
 )
 
 //全局map
 var GlobalItemMap *core.CMap
 var DotApp *dotweb.DotWeb
+var DotTask *task.TaskService
 var InnerLogger dotlog.Logger
 
 func Init(configPath string) error{

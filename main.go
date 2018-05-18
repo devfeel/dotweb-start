@@ -14,6 +14,7 @@ import (
 	"github.com/devfeel/dotweb-start/config"
 	"github.com/devfeel/dotweb-start/server"
 	"github.com/devfeel/dotweb-start/global"
+	"github.com/devfeel/dotweb-start/task"
 )
 
 var (
@@ -58,6 +59,9 @@ func main() {
 		fmt.Println("protected.InitConfig失败 " + err.Error())
 		return
 	}
+
+	//启动Task Service
+	task.StartTaskService(configPath)
 
 	//监听系统信号
 	//go listenSignal()
