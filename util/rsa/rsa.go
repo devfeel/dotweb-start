@@ -8,7 +8,7 @@ import (
 	"errors"
 )
 
-// 加密
+// RsaEncrypt
 func RsaEncrypt(origData []byte, publicKey []byte) ([]byte, error) {
 	block, _ := pem.Decode(publicKey)
 	if block == nil {
@@ -22,7 +22,9 @@ func RsaEncrypt(origData []byte, publicKey []byte) ([]byte, error) {
 	return rsa.EncryptPKCS1v15(rand.Reader, pub, origData)
 }
 
-// 解密
+// RsaDecrypt
+// key-len: 1024
+// PKCS#1
 func RsaDecrypt(ciphertext []byte, privateKey []byte) ([]byte, error) {
 	block, _ := pem.Decode(privateKey)
 	if block == nil {
