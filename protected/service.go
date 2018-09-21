@@ -62,5 +62,9 @@ func Init() error {
 
 // RegisterServiceLoader 注册服务加载接口
 func RegisterServiceLoader(serviceName string, service ServiceLoader) {
+	_, exists:= serviceLoaderMap[serviceName]
+	if exists{
+		panic("Service.RegisterServiceLoader already exists service " + serviceName)
+	}
 	serviceLoaderMap[serviceName] = service
 }
