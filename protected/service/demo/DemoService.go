@@ -1,48 +1,50 @@
 package demo
 
 import (
-	"github.com/devfeel/dotweb-start/const"
-	"github.com/devfeel/dotweb-start/protected"
-	"github.com/devfeel/dotweb-start/protected/model"
-	"github.com/devfeel/dotweb-start/protected/repository"
-	"github.com/devfeel/dotweb-start/protected/service"
-	"errors"
-	"strconv"
-	"github.com/devfeel/dotlog"
-	"github.com/devfeel/cache"
 	"database/sql"
+	"errors"
+	"github.com/devfeel/cache"
+	"github.com/devfeel/dotlog"
+	"github.com/devfeel/dotweb-start/config"
+	"github.com/devfeel/dotweb-start/const"
+	"github.com/devfeel/dotweb-start/protected/model"
+	"github.com/devfeel/dotweb-start/protected/repository/demo"
+	"github.com/devfeel/dotweb-start/protected/service"
+	"strconv"
 )
 
 var (
-	defaultDemoRepository *repository.DemoRepository
-	defaultLogger dotlog.Logger
+	defaultDemoRepository *demo.DemoRepository
+	defaultLogger         dotlog.Logger
 )
 
 const (
-	RedisKey_DemoInfoID = _const.RedisKey_ProjectPre + "DemoInfoID:"
+	defaultRedisID         = "DefaultRedis"
+	RedisKey_DemoInfoID    = _const.RedisKey_ProjectPre + "DemoInfoID:"
 	loggerName_DemoService = "DemoServiceLogger"
 )
 
 type DemoService struct {
 	service.BaseService
-	demoRepository *repository.DemoRepository
-	}
-
-func init() {
-	protected.RegisterServiceLoader("conf", serviceLoader)
+	demoRepository *demo.DemoRepository
 }
 
-func serviceLoader() {
-	defaultDemoRepository = repository.NewDemoRepository(protected.DefaultConfig)
+func init() {
 	defaultLogger = dotlog.GetLogger(loggerName_DemoService)
 }
 
 // NewDemoService create ConfService use default repository config
 func NewDemoService() *DemoService {
 	service := &DemoService{
-		demoRepository: defaultDemoRepository,
+		demoRepository: demo.GetDemoRepository(),
 	}
-	service.RedisCache = cache.GetRedisCache(protected.DefaultConfig.DefaultRedisConn)
+
+	redisInfo, exists := config.GetRedisInfo(defaultRedisID)
+	if !exists || redisInfo.ServerUrl == "" {
+		err := errors.New("no config " + defaultRedisID + " redis config")
+		panic(err)
+	}
+	service.RedisCache = cache.GetRedisCache(redisInfo.ServerUrl)
 	return service
 }
 
@@ -63,7 +65,7 @@ func (service *DemoService) QueryDemoInfo(demoId int) (*model.DemoInfo, error) {
 	err = service.demoRepository.QueryDemoInfo(result, demoId)
 	if err == nil {
 		service.RedisCache.SetJsonObj(redisKey, result)
-	}else if err == sql.ErrNoRows{
+	} else if err == sql.ErrNoRows {
 		result = nil
 		err = errors.New("not exists this demo info")
 	}
@@ -79,7 +81,7 @@ func (service *DemoService) QueryDemoList(rowNum int) ([]*model.DemoInfo, error)
 	var err error
 	err = service.demoRepository.QueryTopDemoList(&results, rowNum)
 	if err == nil {
-		if len(results) <=0 {
+		if len(results) <= 0 {
 			results = nil
 			err = errors.New("not exists this demo info")
 		}
@@ -87,11 +89,11 @@ func (service *DemoService) QueryDemoList(rowNum int) ([]*model.DemoInfo, error)
 	return results, err
 }
 
-func (service *DemoService) AddDemo(demo *model.DemoInfo)error{
-	if demo == nil{
+func (service *DemoService) AddDemo(demo *model.DemoInfo) error {
+	if demo == nil {
 		return errors.New("must set demoinfo")
 	}
-	_, err:= service.demoRepository.InsertDemo(demo)
-	defaultLogger.InfoFormat("AddDemo", *demo, err)
+	_, err := service.demoRepository.InsertDemo(demo)
+	defaultLogger.InfoS("AddDemo", *demo, err)
 	return err
 }
