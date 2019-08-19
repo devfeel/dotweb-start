@@ -2,7 +2,7 @@ package _http
 
 import (
 	"bytes"
-	"fmt"
+	"crypto/tls"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -10,20 +10,32 @@ import (
 	"time"
 )
 
-//定义设置了超时时间的httpclient
-var currClient *http.Client = &http.Client{
-	Transport: &http.Transport{
-		Dial: func(netw, addr string) (net.Conn, error) {
-			c, err := net.DialTimeout(netw, addr, time.Second*300)
-			if err != nil {
-				fmt.Println("dail timeout", err)
-				return nil, err
-			}
-			return c, nil
-		},
-		MaxIdleConnsPerHost:   10,
-		ResponseHeaderTimeout: time.Second * 200,
-	},
+const (
+	MaxIdleConns        int = 100
+	MaxIdleConnsPerHost int = 50
+	IdleConnTimeout     int = 90
+	InsecureSkipVerify      = true
+)
+
+var currClient *http.Client
+
+func getHttpClient() *http.Client {
+	return currClient
+}
+
+func init() {
+	transport := &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).DialContext,
+		MaxIdleConns:        MaxIdleConns,
+		MaxIdleConnsPerHost: MaxIdleConnsPerHost,
+		IdleConnTimeout:     time.Duration(IdleConnTimeout) * time.Second,
+		TLSClientConfig:     &tls.Config{InsecureSkipVerify: InsecureSkipVerify},
+	}
+	currClient = &http.Client{Transport: transport}
 }
 
 func HttpGet(url string) (body string, contentType string, intervalTime int64, errReturn error) {
@@ -33,7 +45,7 @@ func HttpGet(url string) (body string, contentType string, intervalTime int64, e
 	body = ""
 	errReturn = nil
 
-	resp, err := currClient.Get(url)
+	resp, err := getHttpClient().Get(url)
 	if err != nil {
 		intervalTime = int64(time.Now().Sub(startTime) / time.Millisecond)
 		errReturn = err
@@ -66,7 +78,7 @@ func HttpPost(url string, postbody string, bodyType string) (body string, conten
 	if bodyType == "" {
 		bodyType = "application/x-www-form-urlencoded"
 	}
-	resp, err := currClient.Post(url, bodyType, postbytes)
+	resp, err := getHttpClient().Post(url, bodyType, postbytes)
 	if err != nil {
 		intervalTime = int64(time.Now().Sub(startTime) / time.Millisecond)
 		errReturn = err
