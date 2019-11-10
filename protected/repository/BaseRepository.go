@@ -13,11 +13,11 @@ type BaseRepository struct {
 
 func (base *BaseRepository) InitLogger() {
 	base.databaseLogger = dotlog.GetLogger(_const.LoggerName_Repository)
-	base.DBCommand.OnTrace = base.Trace
-	base.DBCommand.OnDebug = base.Debug
-	base.DBCommand.OnInfo = base.Info
-	base.DBCommand.OnWarn = base.Warn
-	base.DBCommand.OnError = base.Error
+	base.GetCommand().SetOnTrace(base.Trace)
+	base.GetCommand().SetOnDebug(base.Debug)
+	base.GetCommand().SetOnInfo(base.Info)
+	base.GetCommand().SetOnWarn(base.Warn)
+	base.GetCommand().SetOnError(base.Error)
 }
 
 func (base *BaseRepository) Trace(content interface{}) {

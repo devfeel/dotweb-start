@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	_file "github.com/devfeel/dotweb-start/util/file"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,7 +14,6 @@ import (
 	"github.com/devfeel/dotweb-start/global"
 	"github.com/devfeel/dotweb-start/server"
 	"github.com/devfeel/dotweb-start/task"
-	"github.com/devfeel/dotweb-start/util/file"
 )
 
 var (
